@@ -8,6 +8,8 @@ Purpose:
 - Drop unnecessary features ('Cabin','Ticket','Name')
 -----------------------------------------------------------------------------------
 """
+import numpy as np
+import pandas as pd
 
 def clean_data(df):
     """ Return the cleaned data frame which is ready to transform into array
@@ -24,7 +26,7 @@ def clean_data(df):
 
     """
     ## Start with 'Sex'
-    sex = sort(df['Sex'].unique())
+    sex = np.sort(df['Sex'].unique())
     
     sex_int = dict(zip(sex, range(0, len(sex) + 1)))
 
@@ -32,7 +34,7 @@ def clean_data(df):
     df['Sex_Val'] = df['Sex'].map(sex_int).astype(int)
     
     ## 'Embarked'
-    embarked = sort(df['Embarked'].unique())
+    embarked = np.sort(df['Embarked'].unique())
 
     # Generate a mapping of Embarked from a string to a number representation        
     embarked_int = dict(zip(embarked, range(0, len(embarked) + 1)))
@@ -45,7 +47,7 @@ def clean_data(df):
     # we assign the missing values in Embarked to 'S':
     if len(df[df['Embarked'].isnull()] > 0):
         df.replace({'Embarked_Val' : 
-                       {embarked_locs_mapping[nan] : embarked_locs_mapping['S']}
+                       {embarked_int[np.nan] : embarked_int['S']}
                    }, 
                    inplace=True)
     
