@@ -11,7 +11,7 @@ Purpose:
 import numpy as np
 import pandas as pd
 
-def clean_data(df):
+def clean_data(df,drop_passenger_id):
     """ Return the cleaned data frame which is ready to transform into array
  
     Parameters
@@ -39,15 +39,21 @@ def clean_data(df):
     # Generate a mapping of Embarked from a string to a number representation        
     embarked_int = dict(zip(embarked, range(0, len(embarked) + 1)))
     
+    # df['Embarked_Val'] = df['Embarked'] \
+    #                            .map(embarked_int) \
+    #                            .astype(int)
+
     # Transform Embarked from a string to dummy variables
     df = pd.concat([df, pd.get_dummies(df['Embarked'], prefix='Embarked_Val')], axis=1)
     
+
     # Fill in missing values of 'Embarked'
     # Because the vast majority of passengers embarked in 'S': 3, 
     # we assign the missing values in Embarked to 'S':
     if len(df[df['Embarked'].isnull()] > 0):
         df.replace({'Embarked_Val' : 
-                       {embarked_int[np.nan] : embarked_int['S']}
+                       {embarked_int[np.nan] : embarked_int['S']
+                       }
                    }, 
                    inplace=True)
     
@@ -71,6 +77,9 @@ def clean_data(df):
     df['FamilySize'] = df['SibSp'] + df['Parch']
     
     # Drop the features(columns) we won't use: (Age->AgeFill, SibSp,Parch->FamilySize)
-    df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked','Age','SibSp','Parch','PassengerId'], axis=1)
+    df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked','Age','SibSp','Parch'], axis=1)
 
+    if drop_passenger_id:
+        df = df.drop(['PassengerId'], axis=1)
+    
     return df
