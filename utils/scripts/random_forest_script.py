@@ -28,7 +28,7 @@ train_data = train_data_frame.values
 train_features = train_data[:, 1:]
 
 # 'Survived' column values
-train_target = train_data[:, 0]
+train_target = list(train_data[:, 0])
 
 # Fit the model to our training data
 clf = clf.fit(train_features, train_target)
