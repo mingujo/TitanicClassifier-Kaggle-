@@ -11,54 +11,54 @@ import numpy as np
 import pylab as plt
 from clean_data import *
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn import metrics, cross_validation
+from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import KFold
 
-clf = RandomForestClassifier(random_state=1, n_estimators=150, min_samples_split=10, min_samples_leaf=8)
-
-df_train = pd.read_csv('../../data/train.csv')
+train_data_frame = pd.read_csv('../../data/train.csv')
 df_test = pd.read_csv('../../data/test.csv')
 
 ### Training
-train_data_frame = clean_data(df_train,drop_passenger_id=True)
+train_data_frame = clean_data(train_data_frame,drop_passenger_id=True)
 train_data = train_data_frame.values
 # Training data features, skip the first column 'Survived'
 train_features = train_data[:, 1:]
 
 
-### feature selection
-# which features are the best?
+# ### feature selection
+# # which features are the best?
 predictors = ["Pclass", "Fare", "Sex_Val", "Embarked_Val", "FamilySize", "Fare_per_person", "AgeFill", "Title", "FamilyId"]
-selector = SelectKBest(f_classif, k=5)
-selector.fit(train_data_frame[predictors], train_data_frame["Survived"])
-scores = -np.log10(selector.pvalues_)
-# best features are (most to least): Sex_Val, Title, Pclass, Fare, Fare_per_person, FamilySize
-predictors_log = ["Pclass", "Fare", "Sex_Val", "Fare_per_person", "FamilySize"]
-scores = cross_validation.cross_val_score(clf, df_train[predictors], df_train["Survived"], cv=3)
+# selector = SelectKBest(f_classif, k=5)
+# selector.fit(train_data_frame[predictors], train_data_frame["Survived"])
+# scores = -np.log10(selector.pvalues_)
+# # best features are (most to least): Sex_Val, Title, Pclass, Fare, Fare_per_person, FamilySize
+# predictors_log = ["Pclass", "Fare", "Sex_Val", "Fare_per_person", "FamilySize"]
+# scores = cross_validation.cross_val_score(clf, train_data_frame[predictors], train_data_frame["Survived"], cv=3)
 
 ### Ensemble Model
 algorithms = [
     [GradientBoostingClassifier(random_state=1, n_estimators=25, max_depth=3), predictors],
-    [LogisticRegression(random_state=1), predictors_log]
+    [LogisticRegression(random_state=1), predictors]
 ]
 #does ordering matter for logistic regression?
 
 # initialize k-fold cross validation
-kf = KFold(df_train.shape[0], n_folds=3, random_state=1)
+kf = KFold(train_data_frame.shape[0], n_folds=3, random_state=1)
 
 # Train ensemble model
 predictions = []
 for train, test in kf:
-    train_target = df_train["Survived"].loc[train]
+    train_target = train_data_frame["Survived"].loc[train]
     all_test_predictions = []
     # make predictions for each algorithm on each fold
     for alg, predictors in algorithms:
         # fit the algorithm on the training data.
-        alg.fit(df_train[predictors].iloc[train,:], train_target)
+        alg.fit(train_data_frame[predictors].iloc[train,:], train_target)
         # select and predict on the test fold.  
-        test_predictions = alg.predict_proba(df_train[predictors].iloc[test,:].astype(float))[:,1]
+        test_predictions = alg.predict_proba(train_data_frame[predictors].iloc[test,:].astype(float))[:,1]
         # .astype(float) is necessary for sklearn
         all_test_predictions.append(test_predictions)
     # just average the predictions to get the final classification.
@@ -70,14 +70,30 @@ for train, test in kf:
     predictions.append(test_predictions)
 
 predictions = np.concatenate(predictions, axis=0)
-accuracy = sum(predictions[predictions == df_train["Survived"]]) / len(predictions)
+accuracy = sum(predictions[predictions == train_data_frame["Survived"]]) / len(predictions)
 print(accuracy)
 # accuracy = 0.835
 
 
 # Run model on Test set
 
+test_data_frame = clean_data(df_test,drop_passenger_id=False)
+test_data = test_data_frame.values
+# Training data features, skip the first column 'Survived'
+test_features = test_data[:, 1:]
 
+all_predictions = []
+for alg, predictors in algorithms:
+    # fit the algorithm using the training data.
+    alg.fit(train_data_frame[predictors], train_data_frame["Survived"])
+    # predict using the test dataset.  We have to convert all the columns to floats to avoid an error.
+    predictions = alg.predict_proba(test_data_frame[predictors].astype(float))[:,1]
+    all_predictions.append(predictions)
+
+predictions = (all_predictions[0] * 5 + all_predictions[1]) / 6
+predictions[predictions <= .5] = 0
+predictions[predictions > .5] = 1
+# accuracy = 0.84
 
 predictions = predictions.astype(int)
 df_test['Survived'] = predictions
