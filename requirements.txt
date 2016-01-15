@@ -1,0 +1,5 @@
+numpy==1.9.2
+scipy==0.16.0
+pandas==0.16.2
+scikit-learn==0.17.0
+operator==2.2
