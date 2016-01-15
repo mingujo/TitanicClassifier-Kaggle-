@@ -1,6 +1,3 @@
-# TitanicClassifier-Kaggle-
-What sorts of people were likely to survive from Titanic tragedy?
-
 # Kaggle Challenge : Titanic Classifier
 ## Min Gu Jo
 ### Fall 2015
