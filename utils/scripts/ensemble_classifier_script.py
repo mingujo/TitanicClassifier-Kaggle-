@@ -18,32 +18,32 @@ from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.cross_validation import KFold
 
-train_data_frame = pd.read_csv('../../data/train.csv')
+df_train = pd.read_csv('../../data/train.csv')
 df_test = pd.read_csv('../../data/test.csv')
 
 ### Training
-train_data_frame = clean_data(train_data_frame,drop_passenger_id=True)
+train_data_frame = clean_data(df_train,drop_passenger_id=True)
 train_data = train_data_frame.values
 # Training data features, skip the first column 'Survived'
 train_features = train_data[:, 1:]
 
 
-# ### feature selection
 # # which features are the best?
-predictors = ["Pclass", "Fare", "Sex_Val", "Embarked_Val", "FamilySize", "Fare_per_person", "AgeFill", "Title", "FamilyId"]
-# selector = SelectKBest(f_classif, k=5)
-# selector.fit(train_data_frame[predictors], train_data_frame["Survived"])
-# scores = -np.log10(selector.pvalues_)
-# # best features are (most to least): Sex_Val, Title, Pclass, Fare, Fare_per_person, FamilySize
-# predictors_log = ["Pclass", "Fare", "Sex_Val", "Fare_per_person", "FamilySize"]
-# scores = cross_validation.cross_val_score(clf, train_data_frame[predictors], train_data_frame["Survived"], cv=3)
+predictors = ["Pclass", "Fare", "Sex", "Ticket","Embarked_Val_C","Embarked_Val_Q", "Embarked_Val_S", 
+			"FamilySize", "AgeFill","AgeCat","Fare_per_person", "Title", "HighLow","FamilyId", \
+			"Age_class", "Fare_class","Family", \
+			#"Sex_class","AgeFill_squared","Age_class_squared",\
+			]
 
 ### Ensemble Model
 algorithms = [
-    [GradientBoostingClassifier(random_state=1, n_estimators=25, max_depth=3), predictors],
+    [GradientBoostingClassifier(learning_rate=0.005, n_estimators=250,
+                                max_depth=10, subsample=0.5,
+                                max_features=0.5,random_state=1), predictors],
     [LogisticRegression(random_state=1), predictors]
 ]
 #does ordering matter for logistic regression?
+
 
 # initialize k-fold cross validation
 kf = KFold(train_data_frame.shape[0], n_folds=3, random_state=1)

@@ -17,7 +17,7 @@ from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score
 
-clf = RandomForestClassifier(random_state=1, n_estimators=150, min_samples_split=8, min_samples_leaf=4)
+clf = RandomForestClassifier(random_state=1, n_estimators=250, min_samples_split=8, min_samples_leaf=5)
 
 df_train = pd.read_csv('../../data/train.csv')
 df_test = pd.read_csv('../../data/test.csv')
@@ -28,14 +28,14 @@ train_data = train_data_frame.values
 # Training data features, skip the first column 'Survived'
 train_features = train_data[:, 1:]
 
-### feature selection
-# which features are the best?
-predictors = ["Pclass", "Fare", "Sex_Val", "Embarked_Val", "FamilySize", \
-				"Fare_per_person", "AgeFill", "Title", "FamilyId"]
-selector = SelectKBest(f_classif, k=5)
-selector.fit(train_data_frame[predictors], train_data_frame["Survived"])
-scores = -np.log10(selector.pvalues_)
-# best features are (most to least): Sex_Val, Title, Pclass, Fare, Fare_per_person, FamilySize
+# ### feature selection
+# # which features are the best?
+# predictors = ["Pclass", "Fare", "Sex_Val", "Embarked_Val", "FamilySize", \
+# 				"Fare_per_person", "AgeFill", "Title", "FamilyId"]
+# selector = SelectKBest(f_classif, k=5)
+# selector.fit(train_data_frame[predictors], train_data_frame["Survived"])
+# scores = -np.log10(selector.pvalues_)
+# # best features are (most to least): Sex_Val, Title, Pclass, Fare, Fare_per_person, FamilySize
 
 
 # 'Survived' column values
@@ -70,7 +70,7 @@ train_x, test_x, train_y, test_y = train_test_split(train_features, train_target
 clf = clf.fit(train_x, train_y)
 predict_y = clf.predict(test_x).astype(int)
 
-print ("Accuracy = %.2f" % (accuracy_score(test_y, predict_y)))
+print ("Accuracy = %.5f" % (accuracy_score(test_y, predict_y)))
 
 
 ### Fit to Test Set
