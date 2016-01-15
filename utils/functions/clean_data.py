@@ -71,6 +71,10 @@ def clean_data(df,drop_passenger_id):
     ################ 'Title'
     titles = df['Name'].apply(get_title)
 
+    # title_mapping = {"Mr": 1, "Miss": 6, "Ms": 6, "Mrs": 4, "Master": 3, 
+    #                 "Dr": 2, "Rev": 2, "Major": 2, "Col": 2, "Capt" : 2, "Mlle": 6, 
+    #                 "Mme": 4, "Don": 2, "Sir": 2, "Lady": 6, "Countess": 4, "Jonkheer": 2, "Dona": 6}
+
     title_mapping = {"Mr": 1, "Miss": 2, "Ms": 2, "Mrs": 3, "Master": 4, 
                     "Dr": 5, "Rev": 6, "Major": 7, "Col": 7, "Capt" : 7, "Mlle": 8, 
                     "Mme": 8, "Don": 9, "Sir": 9, "Lady": 10, "Countess": 10, "Jonkheer": 10, "Dona": 10}
@@ -168,7 +172,7 @@ def clean_data(df,drop_passenger_id):
 
     ################ 'Family'
     df['Family']=df['SibSp']*df['Parch']
-    
+
 
 
     # ################ Sex_class

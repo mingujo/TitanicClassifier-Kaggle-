@@ -17,7 +17,9 @@ from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import accuracy_score
 
-clf = RandomForestClassifier(random_state=1, n_estimators=250, min_samples_split=8, min_samples_leaf=5)
+clf = RandomForestClassifier(n_estimators=500, criterion='entropy', max_depth=5, min_samples_split=1,
+  min_samples_leaf=1, max_features='auto',    bootstrap=False, oob_score=False, n_jobs=1, random_state=1,
+  verbose=0)
 
 df_train = pd.read_csv('../../data/train.csv')
 df_test = pd.read_csv('../../data/test.csv')
