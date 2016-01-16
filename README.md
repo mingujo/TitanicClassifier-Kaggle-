@@ -12,7 +12,7 @@ In this challenge, we ask you to complete the analysis of what sorts of people w
 
 
 ## Directions
-1. Clone the repo: `git clone https://github.com/TitanicClassifier-Kaggle-.git'
+1. Clone the repo: `git clone https://github.com/mingujo/TitanicClassifier-Kaggle-.git'
 2. Install python dependencies with pip: `pip install -r requirements.txt` 
 
 ## Navigation
