@@ -16,6 +16,5 @@ In this challenge, we ask you to complete the analysis of what sorts of people w
 2. Install python dependencies with pip: `pip install -r requirements.txt` 
 
 ## Navigation
-- `ipython` : to open ipython notebook on terminal
-- `run enensemble_classifier_script.py` : to see the performance of the ensemble classifier (Gradient Boosting & Logistic Regression)
-- `run random_forest_script.py` : to see the performance of Random Forest Classifier
+- `make enensemble_classifier` : to see the performance of the ensemble classifier (Gradient Boosting & Logistic Regression)
+- `make random_forest` : to see the performance of Random Forest Classifier
